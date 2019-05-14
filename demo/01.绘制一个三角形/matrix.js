@@ -231,13 +231,14 @@ Matrix4.prototype.setInverseOf = function(other) {
 Matrix4.prototype.invert = function() {
   return this.setInverseOf(this)
 }
-
+// 用于生成视图矩阵
 Matrix4.prototype.lookAt = function(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
   return this.concat(new Matrix4().setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ))
 }
 
 Matrix4.prototype.setLookAt = function(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
   var e, fx, fy, fz, rlf, sx, sy, sz, rls, ux, uy, uz
+  // 得到forward向量
   fx = centerY - eyeX
   fy = centerY - eyeY
   fz = centerZ - eyeZ
@@ -256,10 +257,11 @@ Matrix4.prototype.setLookAt = function(eyeX, eyeY, eyeZ, centerX, centerY, cente
   sy *= rls
   sz *= rls
 
+  // 差乘计算
   ux = sy * fz - sz * fy
   uy = sz * fy - sx * fz
   uz = sx * fy - sy * fx
-
+  // 得到旋转矩阵
   e = this.elements
 
   e[0] = sx
@@ -331,6 +333,7 @@ Matrix4.prototype.setPerspective = function(fovy, aspect, near, far) {
   return this
 }
 
+// 正交投影
 Matrix4.prototype.ortho = function(left, right, bottom, top, near, far) {
   return this.concat(new Matrix4().setOrtho(left, right, bottom, top, near, far))
 }

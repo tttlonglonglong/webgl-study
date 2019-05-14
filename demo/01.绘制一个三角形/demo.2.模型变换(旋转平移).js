@@ -9,11 +9,8 @@ var vertexShader, fragmentShader
 var VSHADER_SOURCE, FSHADER_SOURCE
 VSHADER_SOURCE = `
 attribute vec4 a_Position; 
-uniform mat4 u_ModelMatrix;
-uniform mat4 u_ViewMatrix;
-uniform mat4 u_ProjectionMatrix;
 void main () {
-  gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;
+  gl_Position = a_Position;
 }`
 FSHADER_SOURCE = `
   void main(){
@@ -48,8 +45,8 @@ gl.program = program
 // 将顶点的位置传递到vertex shader中
 // 实现 a_Position 和 对应的buffer 绑定
 function initVertextBuffers(gl) {
-  var vertices = new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5])
-  // var vertices = new Float32Array([-1, 1, -1, -1, 1, -1])
+  // var vertices = new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5])
+  var vertices = new Float32Array([-1, 1, -1, -1, 1, -1])
   var n = 3
   var vertexBuffer = gl.createBuffer()
   // 顶点缓冲区有俩种：ARRAY_BUFFER:顶点缓冲区， ELEMENT_ARRAY_BUFFER: 顶点索引缓冲区
@@ -79,67 +76,10 @@ var n = initVertextBuffers(gl)
 
 // 清空颜色缓冲时的颜色值
 gl.clearColor(0, 0, 0, 1)
-
-// 传uniform的数据不需要像传递vtex一样，使用createBuffer去做，只需要拿到uniform的location然后通过uniform对应的API就能把对应存储空间内的数据传到shader中去了
-// 拿到uniform的数据
-var u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix')
-// modelMatrix的定义，和 modelMatrix矩阵的计算，通过matxjs统一管理矩阵计算
-var modelMatrix = new Matrix4()
-
-// 添加视图矩阵变换
-var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix')
-var viewMatrix = new Matrix4()
-// viewMatrix.lookAt(100, 100, 100, 0, 0, 0, 0, 1, 0)
-// viewMatrix.lookAt(0, 0, 0.8, 0, 0, -1, 0, 1, 0)
-viewMatrix.lookAt(0.3, 0.3, 0.3, 0, 0, 0, 0, 1, 0)
-
-// 添加透视投影矩阵
-var u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix')
-var projectionMatrix = new Matrix4()
-// projectionMatrix.perspective(120, 1, 0.1, 1000)
-// console.log('projectionMatrix.elements', projectionMatrix.elements)
-projectionMatrix.ortho(-1, 1, -1, 1, 0.1, 1000)
-// projectionMatrix.ortho(-10, 10, -10, 10, 0.1, 1000)
-
-// modelMatrix.setRotate(75, 0, 1, 0) // 绕着Y轴旋转30度
-//往uniform中传matrix
-// gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements)
-
 function draw() {
   // 清除画布，添加背景色
   gl.clear(gl.COLOR_BUFFER_BIT)
-  // 每次绘制新的角度
-  // modelMatrix.setRotate(currentAngle, 0, 1, 0)
-  // modelMatrix.setRotate(currentAngle, 1, 0, 0) // 绕x轴转
-  // modelMatrix.setRotate(currentAngle, 0, 0, 1) // 绕z轴转
-  modelMatrix.setRotate(currentAngle, 0, 1, 0) // 绕y轴转
-  // draw的时候更新新的角度
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements)
-  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements)
-  gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements)
   // gl.drawArrays(mode, first, count)
   gl.drawArrays(gl.TRIANGLES, 0, n)
 }
-
-// draw()
-
-var g_last = new Date()
-function animate() {
-  var now = Date.now()
-  var duration = now - g_last
-  g_last = now
-  // 1秒转180度
-  currentAngle = currentAngle + (duration / 1000) * 180
-}
-
-// 利用canvas绘制的requestAnimationFrarme的方法，调用下一个canvas可以刷新的时间点，在那个时间点进行三角形的角度旋转，并且重新进行绘制
-var currentAngle = 0
-var tick = function() {
-  // update the new totation angle
-  animate()
-  // draw
-  draw()
-  requestAnimationFrame(tick)
-}
-
-tick()
+draw()
