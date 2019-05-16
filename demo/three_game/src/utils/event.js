@@ -1,0 +1,17 @@
+class Event {
+  constructor(sender) {
+    this._sender = sender
+    this._listeners = []
+  }
+  attach(callback) {
+    this._listeners.push(callback)
+  }
+  // 触发所有函数
+  notify(args) {
+    for (let i = 0; i < this._listeners.length; i++) {
+      this._listeners[i](sender, args)
+    }
+  }
+}
+
+export default Event
