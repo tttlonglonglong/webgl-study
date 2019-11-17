@@ -1,14 +1,17 @@
 /**
  * 业务代码逻辑
  *  通过controller去改变view 和 model
- */ 
-import controller from './controller'
+ */
+
+import gameController from './controller'
 
 class Game {
   constructor() {
-
+    this.gameController = gameController
   }
-  init()
+  init() {
+    this.gameController.initPages()
+  }
 }
 
 // es6类的方法和属性 需要实例化才能使用

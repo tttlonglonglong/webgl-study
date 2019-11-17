@@ -32,7 +32,10 @@ class GameController {
       // over页面的回调重新开始游戏
       gameRestart: this.restartGame
     }
+    console.log('this.gameView', this.gameView)
     this.gameView.initGameOverPage(gemeOverPageCallbacks)
-    this.gameView.initGamePage(gemePageCallbacks)
+    this.gameView.initGamepage(gemePageCallbacks)
   }
 }
+
+export default new GameController()
